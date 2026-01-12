@@ -71,6 +71,20 @@
     white-space:nowrap;
   }
 
+  .price-ticker{
+    font-variant-numeric:tabular-nums;
+    transition:color .16s ease;
+  }
+  .price-up{ color:var(--ok) !important; }
+  .price-down{ color:var(--danger) !important; }
+  @keyframes priceBump{
+    0%{ transform:translateY(0); }
+    30%{ transform:translateY(-2px); }
+    60%{ transform:translateY(1px); }
+    100%{ transform:translateY(0); }
+  }
+  .price-bump{ animation:priceBump .35s ease; }
+
   .tabs{ display:flex; border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:10px; }
   .tab{
     flex:1; text-align:center; padding:10px 0;
@@ -1510,7 +1524,7 @@ body{
     <div style="display:flex; align-items:center; gap:18px; min-width: 420px;">
       <div class="nav-left">
         <img
-          src="https://github.com/Sosogao/fx100-demo/blob/main/assets/fx100-logo.png"
+          src="https://raw.githubusercontent.com/Sosogao/fx100-demo/main/assets/fx100-logo.png"
           alt="FX100"
           class="brand-mark"
           width="150"
@@ -1830,6 +1844,52 @@ body{
 </div>
 
 <script>
+(function(){
+  const subs = new Set();
+  let lastPrice = null;
+  let lastDir = "flat";
+  const FEED_URL = "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT";
+
+  async function pull(){
+    try{
+      const res = await fetch(FEED_URL, {cache:"no-store"});
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const value = Number(data?.price);
+      if(!Number.isFinite(value)) return;
+      const dir = lastPrice == null ? "flat" : (value > lastPrice ? "up" : value < lastPrice ? "down" : "flat");
+      lastPrice = value;
+      lastDir = dir;
+      const payload = { price:value, direction:dir, ts:Date.now() };
+      subs.forEach(fn => {
+        try{ fn(payload); } catch(err){ console.error(err); }
+      });
+    }catch(err){
+      console.warn("Live price feed error", err);
+    }
+  }
+
+  function start(){
+    pull();
+    setInterval(pull, 4000);
+  }
+
+  window.fxPriceFeed = {
+    subscribe(fn){
+      if(typeof fn !== "function") return () => {};
+      subs.add(fn);
+      if(lastPrice != null) fn({ price:lastPrice, direction:lastDir, ts:Date.now() });
+      return () => subs.delete(fn);
+    },
+    getPrice(){ return lastPrice; },
+    getDirection(){ return lastDir; }
+  };
+
+  start();
+})();
+</script>
+
+<script>
 (() => {
 
   // ===== Market selector (Hyperliquid-like, simplified) =====
@@ -1855,6 +1915,26 @@ body{
     allBtn: null,
     tabs: null,
   };
+  const statOracleEl = document.getElementById('statOracle');
+  const priceFeed = window.fxPriceFeed;
+  let oracleFlashTimer = null;
+  const fmtOracle = (n) => Number.isFinite(n)
+    ? n.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
+    : "--";
+  function animateOracle(direction){
+    if(!statOracleEl) return;
+    statOracleEl.classList.add('price-ticker');
+    statOracleEl.classList.toggle('price-up', direction === 'up');
+    statOracleEl.classList.toggle('price-down', direction === 'down');
+    statOracleEl.classList.add('price-bump');
+    clearTimeout(oracleFlashTimer);
+    oracleFlashTimer = setTimeout(()=> statOracleEl.classList.remove('price-bump'), 320);
+  }
+  function updateOraclePrice(price, direction){
+    if(!statOracleEl || !Number.isFinite(price)) return;
+    statOracleEl.textContent = fmtOracle(price);
+    animateOracle(direction);
+  }
 
   function mktEnsure() {
     if (!mkt.overlay) mkt.overlay = document.getElementById('mktOverlay');
@@ -2057,6 +2137,11 @@ body{
       closeMarket();
     }
   });
+  if(priceFeed && typeof priceFeed.subscribe === "function"){
+    priceFeed.subscribe(({price, direction}) => {
+      updateOraclePrice(price, direction);
+    });
+  }
   // Mock data (replace with real)
   const market = { oraclePrice: 4302.15, feeRate: 0.0005, maxLev: 25 };
   const wallet = { availableUSDC: 1000 };
@@ -2153,6 +2238,16 @@ body{
   const protTitle = $("protTitle");
   const protSub = $("protSub");
   const protRight = $("protRight");
+
+  let liveEntryPrice = null;
+  let liveEntryDirection = "flat";
+  let entryFlashTimer = null;
+  function bumpEntryTicker(){
+    if(!entryV) return;
+    entryV.classList.add("price-ticker","price-bump");
+    clearTimeout(entryFlashTimer);
+    entryFlashTimer = setTimeout(() => entryV.classList.remove("price-bump"), 350);
+  }
 
   const fmt = (n, d=2) => Number.isFinite(n)
     ? n.toLocaleString(undefined, {minimumFractionDigits:d, maximumFractionDigits:d})
@@ -2399,7 +2494,16 @@ body{
 
     // Preview
     orderValueV.textContent = Number.isFinite(p.orderValue) ? fmtUsd(p.orderValue) : "--";
-    entryV.textContent = Number.isFinite(p.entry) ? fmt(p.entry, 2) : "--";
+    const priceForEntry = Number.isFinite(liveEntryPrice) ? liveEntryPrice : p.entry;
+    if (Number.isFinite(priceForEntry)) {
+      entryV.textContent = fmt(priceForEntry, 2);
+      entryV.classList.add("price-ticker");
+      entryV.classList.toggle("price-up", liveEntryDirection === "up");
+      entryV.classList.toggle("price-down", liveEntryDirection === "down");
+    } else {
+      entryV.textContent = "--";
+      entryV.classList.remove("price-up", "price-down", "price-ticker");
+    }
     liqV.textContent = Number.isFinite(p.liq) ? fmt(p.liq, 2) : "--";
 
     if (Number.isFinite(p.feeUsd)) {
@@ -2489,6 +2593,28 @@ body{
     sizeErr.style.display = err ? "block" : "none";
     sizeErr.textContent = err || "";
     submitBtn.disabled = !!err || !(state.size > 0);
+  }
+
+  if (priceFeed && typeof priceFeed.subscribe === "function") {
+    priceFeed.subscribe(({price, direction}) => {
+      if (!Number.isFinite(price)) return;
+      liveEntryPrice = price;
+      if (direction) liveEntryDirection = direction;
+      market.oraclePrice = price;
+      bumpEntryTicker();
+      render();
+    });
+  }
+
+  if (priceFeed && typeof priceFeed.subscribe === "function") {
+    priceFeed.subscribe(({price, direction}) => {
+      if (!Number.isFinite(price)) return;
+      liveEntryPrice = price;
+      if (direction) liveEntryDirection = direction;
+      market.oraclePrice = price;
+      bumpEntryTicker();
+      render();
+    });
   }
 
   // Tabs
@@ -2818,6 +2944,17 @@ sideSeg.addEventListener("click", (e) => {
   const protSub = $("protSub");
   const protRight = $("protRight");
 
+  const priceFeed = window.fxPriceFeed;
+  let liveEntryPrice = null;
+  let liveEntryDirection = "flat";
+  let entryFlashTimer = null;
+  function bumpEntryTicker(){
+    if(!entryV) return;
+    entryV.classList.add("price-ticker","price-bump");
+    clearTimeout(entryFlashTimer);
+    entryFlashTimer = setTimeout(() => entryV.classList.remove("price-bump"), 350);
+  }
+
   const fmt = (n, d=2) => Number.isFinite(n)
     ? n.toLocaleString(undefined, {minimumFractionDigits:d, maximumFractionDigits:d})
     : "--";
@@ -3063,7 +3200,16 @@ sideSeg.addEventListener("click", (e) => {
 
     // Preview
     orderValueV.textContent = Number.isFinite(p.orderValue) ? fmtUsd(p.orderValue) : "--";
-    entryV.textContent = Number.isFinite(p.entry) ? fmt(p.entry, 2) : "--";
+    const priceForEntry = Number.isFinite(liveEntryPrice) ? liveEntryPrice : p.entry;
+    if (Number.isFinite(priceForEntry)) {
+      entryV.textContent = fmt(priceForEntry, 2);
+      entryV.classList.add("price-ticker");
+      entryV.classList.toggle("price-up", liveEntryDirection === "up");
+      entryV.classList.toggle("price-down", liveEntryDirection === "down");
+    } else {
+      entryV.textContent = "--";
+      entryV.classList.remove("price-up", "price-down", "price-ticker");
+    }
     liqV.textContent = Number.isFinite(p.liq) ? fmt(p.liq, 2) : "--";
 
     if (Number.isFinite(p.feeUsd)) {
@@ -3474,6 +3620,9 @@ sideSeg.addEventListener("click", (e) => {
     ],
   };
 
+  const priceFeed = window.fxPriceFeed;
+  let livePrice = (priceFeed && typeof priceFeed.getPrice === "function") ? priceFeed.getPrice() : null;
+
   // Expose demo data for external modules (positions actions modals)
   window.__fx100Data = data;
 
@@ -3502,6 +3651,14 @@ sideSeg.addEventListener("click", (e) => {
 
   let currentTab = 'positions';
   let currentFilter = 'all';
+
+  if (priceFeed && typeof priceFeed.subscribe === "function") {
+    priceFeed.subscribe(({price}) => {
+      if (!Number.isFinite(price)) return;
+      livePrice = price;
+      if (currentTab === 'positions') renderPositions();
+    });
+  }
 
   function clear(tbody){ while(tbody.firstChild) tbody.removeChild(tbody.firstChild); }
   function row(inner){
@@ -3545,12 +3702,13 @@ sideSeg.addEventListener("click", (e) => {
       const dirClass = sideLower.includes('long') ? 'dir-long' : (sideLower.includes('short') ? 'dir-short' : '');
       const pnlClass = (String(p.pnl).includes('-')) ? 'dir-short' : 'dir-long';
 
+      const entryDisplay = Number.isFinite(livePrice) ? fmtNum(livePrice, 2) : p.entry;
       const tr = row(`
         <td><b>${p.coin}</b> <span class="chip-mini ${dirClass}">${p.lev ?? ""}</span></td>
         <td class="${dirClass}"><b>${p.side}</b></td>
         <td class="${dirClass}"><b>${p.size}</b></td>
         <td><b>${posVal}</b></td>
-        <td>${p.entry}</td>
+        <td>${entryDisplay}</td>
         <td><b>${p.oracle}</b></td>
         <td class="${pnlClass}"><b>${p.pnl}</b></td>
         <td>${liqProt}</td>
