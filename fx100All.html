@@ -106,15 +106,52 @@
   }
   .seg2 button{
     flex:1; border:0; background:transparent;
-    color:rgba(232,237,246,.55);
-    font-weight:900; font-size:13px;
-    padding:10px 10px; border-radius:10px;
+    color:rgba(232,237,246,.80);
+    font-weight:900;
+    padding:10px 12px; border-radius:10px;
     cursor:pointer;
     transition: background .15s, color .15s, transform .02s;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:4px;
   }
   .seg2 button:active{ transform: translateY(1px); }
-  .seg2 button.on.buy{ background: rgba(78,227,205,.22); color:var(--text); }
-  .seg2 button.on.sell{ background: rgba(255,77,79,.16); color:var(--text); }
+  .seg2 button.on.buy{
+    border:1px solid rgba(78,227,205,.45);
+    background: rgba(78,227,205,.15);
+    color:var(--text);
+  }
+  .seg2 button.on.sell{
+    border:1px solid rgba(255,77,79,.35);
+    background: rgba(255,77,79,.12);
+    color:var(--text);
+  }
+  .segLabel{
+    font-size:12px;
+    letter-spacing:.05em;
+    color:rgba(232,237,246,.72);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .seg2 button.on .segLabel{ color:var(--text); }
+  .segIcon{
+    display:flex;
+    align-items:center;
+    opacity:.85;
+  }
+  .segIcon svg{
+    width:16px;
+    height:8px;
+    display:block;
+  }
+  .segPrice{
+    font-family:var(--mono);
+    font-size:14px;
+    color:var(--text);
+  }
 
   .body{ padding:12px 16px 16px; display:flex; flex-direction:column; gap:12px; }
 
@@ -574,66 +611,74 @@
   /* --- Details rows: allow hide by mode --- */
   .pRow.hiddenRow, .pSub.hiddenRow{ display:none !important; }
 
-  /* --- Liquidation Protection (15m) --- */
-  .protBanner{
+  .details-card{
+    padding:0;
+    overflow:hidden;
+  }
+  .details-head{
+    width:100%;
+    border:0;
+    background:transparent;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:12px;
-    padding:10px 12px;
-    border-radius:14px;
-    border:1px solid rgba(255,255,255,.08);
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-    user-select:none;
+    padding:14px 16px;
+    font-size:13px;
+    font-weight:800;
+    color:var(--label);
+    cursor:pointer;
   }
-  .protLeft{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0;
+  .details-head .chevron{
+    transition:transform .2s ease;
+    font-size:16px;
   }
-  .shield{
-    width:22px;height:22px;
-    border-radius:8px;
-    display:grid;
-    place-items:center;
-    border:1px solid rgba(41,211,125,.22);
+  .details-card.expanded .details-head{ color:var(--text); }
+  .details-card.expanded .chevron{ transform:rotate(180deg); }
+  .details-body{ padding:0 16px 16px; }
+  .details-card.collapsed .details-body{ display:none; }
+
+  .protCard{
+    text-align:center;
+    border:1px solid rgba(41,211,125,.18);
+    background: rgba(41,211,125,.04);
+    padding:18px;
+  }
+  .protCard.active{
+    border-color: rgba(41,211,125,.35);
     background: rgba(41,211,125,.08);
-    color: rgba(41,211,125,.95);
-    flex:0 0 auto;
+    box-shadow:0 10px 30px rgba(41,211,125,.18);
   }
-  .protTxt{ display:flex; flex-direction:column; gap:2px; min-width:0; }
-  .protT1{
+  .protTitle{
+    font-size:13px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    margin-bottom:8px;
+    color:var(--label);
+  }
+  .protMsg{
+    font-size:14px;
+    color:rgba(232,237,246,.85);
+    margin-bottom:10px;
+  }
+  .protTimer{
+    font-family:var(--mono);
+    font-size:32px;
+    font-weight:700;
+    color:var(--ok);
+    letter-spacing:.08em;
+    margin-bottom:4px;
+  }
+  .protLabel{
+    font-size:13px;
+    letter-spacing:.3em;
+    color:rgba(232,237,246,.75);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .protNote{
     font-size:12px;
-    font-weight:950;
-    color: rgba(232,237,246,.70);
-    letter-spacing:.2px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  .protT2{
-    font-size:11px;
-    color: rgba(232,237,246,.38);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  .protRight{
-    font-family: var(--mono);
-    font-size:12px;
-    padding:6px 10px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.10);
-    background: rgba(255,255,255,.03);
-    color: rgba(232,237,246,.85);
-    white-space:nowrap;
-  }
-  .protRight.active{
-    border-color: rgba(41,211,125,.22);
-    background: rgba(41,211,125,.10);
-    color: rgba(41,211,125,.95);
+    color:var(--label);
   }
 
 
@@ -791,7 +836,17 @@
   color: rgba(255,255,255,.82);
   font-size: 12px;
 }
-.fx-mini{ font-size: 12px; color: var(--muted); }
+.fx-mini{ font-size: 12px; color: var(--label); }
+.fx-value{
+  font-family:var(--mono);
+  font-size:13px;
+  color:rgba(232,237,246,.80);
+}
+.fx-note{
+  font-size:11px;
+  color:rgba(232,237,246,.55);
+  line-height:1.4;
+}
 .fx-kbd{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; opacity:.85; }
 .fx-modal-card{
   border: 1px solid var(--border);
@@ -1228,13 +1283,41 @@ body{
   border-radius: 6px;
 }
 .stats{
-  display:flex; gap:18px; flex:1; flex-wrap:wrap;
+  display:flex;
+  gap:22px;
+  flex:1;
+  flex-wrap:wrap;
   color: var(--text-2);
   font-size:12px;
 }
-.stat b{ color: var(--text-1); font-weight:700; font-variant-numeric: tabular-nums; }
-.stat .down{ color: rgba(255,110,110,.95); }
-.stat .up{ color: rgba(37,206,174,.95); }
+.stat{
+  display:flex;
+  flex-direction:column;
+  min-width:120px;
+  gap:2px;
+}
+.statLabel{
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:rgba(232,237,246,.55);
+}
+.statValue{
+  font-family:var(--mono);
+  font-size:15px;
+  color:var(--text-1);
+}
+.statValue.down{ color: rgba(255,110,110,.95); }
+.statValue.up{ color: rgba(37,206,174,.95); }
+.statPair{
+  display:flex;
+  gap:4px;
+  font-size:15px;
+  font-family:var(--mono);
+}
+.statLong{ color: var(--dirLong); }
+.statShort{ color: var(--dirShort); }
+.statPair .divider{ color:rgba(232,237,246,.35); }
 .top-actions{ display:flex; align-items:center; gap:10px; }
 .icon-btn{
   width:34px; height:34px; border-radius:10px;
@@ -1408,7 +1491,7 @@ body{
 }
 #tablePositions th:last-child,
 #tablePositions td.actions{
-  width:200px;
+  width:260px;
 }
 .table td.actions{
   overflow:visible;
@@ -1584,15 +1667,34 @@ body{
             <div class="logo" aria-hidden="true"></div>
             <div class="pair">ETH-USDC</div>
             <span class="lev">100x</span>
-            <span class="badge">Oracle</span>
+            <span class="badge" style="margin-left:2px;">Oracle</span>
                 <span class="caret" aria-hidden="true">▾</span>
           </button>
           <div class="stats">
-            <div class="stat">Oracle <b id="statOracle">4,302.15</b></div>
-            <div class="stat">24H Change <b class="down" id="statChg">-2.14 / 3.23%</b></div>
-            <div class="stat">24H Volume <b id="statVol">$1.64B</b></div>
-            <div class="stat">Open Interest <b id="statOI">$3.06B</b></div>
-            <div class="stat">Funding <b class="up" id="statFunding">0.0013%</b></div>
+            <div class="stat">
+              <div class="statLabel">Oracle Price</div>
+              <div class="statValue" id="statOracle">3,302.15</div>
+            </div>
+            <div class="stat">
+              <div class="statLabel">24H Change</div>
+              <div class="statValue down" id="statChg">-2.14 / 3.23%</div>
+            </div>
+            <div class="stat">
+              <div class="statLabel">24H Volume</div>
+              <div class="statValue" id="statVol">$1.64B</div>
+            </div>
+            <div class="stat">
+              <div class="statLabel">Open Interest</div>
+              <div class="statPair">
+                <span class="statLong" id="statLongOI">$1.58B</span>
+                <span class="divider">/</span>
+                <span class="statShort" id="statShortOI">$1.48B</span>
+              </div>
+            </div>
+            <div class="stat">
+              <div class="statLabel">Funding</div>
+              <div class="statValue up" id="statFunding">0.0013%</div>
+            </div>
           </div>
           <div class="top-actions">
             <button class="icon-btn" title="Settings" aria-label="Settings">⚙︎</button>
@@ -1690,8 +1792,26 @@ body{
       </div>
 
       <div class="seg2" id="sideSeg">
-        <button class="on buy" data-side="buy">Buy / Long</button>
-        <button class="sell" data-side="sell">Sell / Short</button>
+        <button class="on buy" data-side="buy">
+          <span class="segLabel">Buy / Long
+            <span class="segIcon" aria-hidden="true">
+              <svg viewBox="0 0 16 8" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 0C9.63183 0 9.33335 0.298477 9.33335 0.666667C9.33335 1.03486 9.63183 1.33333 10 1.33333H13.0572L8.94953 5.44102C8.80974 5.5808 8.73289 5.65692 8.67344 5.70739L8.66669 5.71306L8.65993 5.70739C8.60048 5.65692 8.52363 5.5808 8.38384 5.44101L6.54397 3.60114C6.42502 3.48216 6.30915 3.36626 6.20301 3.27616C6.08645 3.1772 5.93852 3.07082 5.74538 3.00807C5.47758 2.92106 5.18912 2.92106 4.92133 3.00807C4.72819 3.07082 4.58026 3.1772 4.46369 3.27616C4.35755 3.36627 4.2417 3.48215 4.12274 3.60113L0.861949 6.86193C0.6016 7.12228 0.6016 7.54439 0.861949 7.80474C1.1223 8.06509 1.54441 8.06509 1.80476 7.80474L5.05051 4.55899C5.19029 4.4192 5.26715 4.34308 5.3266 4.29261L5.33335 4.28694L5.34011 4.29261C5.39956 4.34308 5.47641 4.4192 5.6162 4.55898L7.45608 6.39887C7.57504 6.51786 7.69089 6.63373 7.79703 6.72384C7.91359 6.8228 8.06152 6.92918 8.25466 6.99193C8.52246 7.07894 8.81092 7.07894 9.07871 6.99193C9.27185 6.92918 9.41978 6.8228 9.53635 6.72384C9.64249 6.63373 9.75834 6.51785 9.87731 6.39886L14 2.27614V5.33333C14 5.70152 14.2985 6 14.6667 6C15.0349 6 15.3334 5.70152 15.3334 5.33333V0.666667C15.3334 0.298477 15.0349 0 14.6667 0H10Z" fill="currentColor"/>
+              </svg>
+            </span>
+          </span>
+          <span class="segPrice" id="buyPrice">--</span>
+        </button>
+        <button class="sell" data-side="sell">
+          <span class="segLabel">Sell / Short
+            <span class="segIcon" aria-hidden="true">
+              <svg viewBox="0 0 16 8" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.30473 0.195262C1.04438 -0.0650874 0.622268 -0.0650874 0.361919 0.195262C0.101569 0.455612 0.101569 0.877722 0.361919 1.13807L3.6227 4.39886C3.74166 4.51785 3.85752 4.63373 3.96366 4.72384C4.08023 4.8228 4.22816 4.92918 4.4213 4.99193C4.68909 5.07894 4.97755 5.07894 5.24535 4.99193C5.43849 4.92918 5.58642 4.8228 5.70298 4.72384C5.80913 4.63373 5.92498 4.51785 6.04394 4.39887L7.88381 2.55899C8.0236 2.4192 8.10045 2.34308 8.1599 2.29261L8.16666 2.28694L8.17341 2.29261C8.23286 2.34308 8.30971 2.4192 8.4495 2.55898L12.5572 6.66667H9.49999C9.1318 6.66667 8.83332 6.96514 8.83332 7.33333C8.83332 7.70152 9.1318 8 9.49999 8H14.1667C14.5348 8 14.8333 7.70152 14.8333 7.33333V2.66667C14.8333 2.29848 14.5348 2 14.1667 2C13.7985 2 13.5 2.29848 13.5 2.66667V5.72386L9.37727 1.60114C9.25832 1.48215 9.14246 1.36627 9.03631 1.27616C8.91975 1.1772 8.77182 1.07082 8.57868 1.00807C8.31089 0.921056 8.02242 0.921056 7.75463 1.00807C7.56149 1.07082 7.41356 1.1772 7.297 1.27616C7.19086 1.36626 7.07502 1.48213 6.95607 1.60111L5.11616 3.44102C4.97638 3.5808 4.89953 3.65692 4.84008 3.70739L4.83332 3.71306L4.82657 3.70739C4.76712 3.65692 4.69026 3.5808 4.55048 3.44102L1.30473 0.195262Z" fill="currentColor"/>
+              </svg>
+            </span>
+          </span>
+          <span class="segPrice" id="sellPrice">--</span>
+        </button>
       </div>
     </div>
 
@@ -1788,52 +1908,54 @@ body{
       </div>
 
 
-      <!-- Liquidation Protection (preview / countdown) -->
-      <div class="protBanner" id="protBanner">
-        <div class="protLeft">
-          <div class="shield" aria-hidden="true">🛡</div>
-          <div class="protTxt">
-            <div class="protT1" id="protTitle">Liquidation Protection · 15 min</div>
-            <div class="protT2" id="protSub">No liquidation during the first 15 minutes after opening</div>
-          </div>
-        </div>
-        <div class="protRight" id="protRight">15 min</div>
-      </div>
-
       <!-- NEW: CTA moved ABOVE details -->
       <div class="ctaDivider"></div>
       <button class="btn buy" id="submitBtn" disabled>Place Buy / Long</button>
       <div class="ctaDivider"></div>
 
       <!-- Details remain optional -->
-      <div class="card">
-        <div class="preview">
-          <div class="pRow"><div class="k">Order Value</div><div class="v" id="orderValueV">--</div></div>
+      <div class="card details-card collapsed" id="tradeDetailsCard">
+        <button class="details-head" id="detailsToggle" type="button" aria-expanded="false">
+          <span>Trade Details</span>
+          <span class="chevron" aria-hidden="true">▾</span>
+        </button>
+        <div class="details-body" id="tradeDetailsBody">
+          <div class="preview">
+            <div class="pRow"><div class="k">Order Value</div><div class="v" id="orderValueV">--</div></div>
 
-          <div class="pRow" id="entryRow"><div class="k">Estimated Entry</div><div class="v vHi" id="entryV">--</div></div>
-          <div class="pSub" id="impactRow"><div class="k">Price Impact</div><div class="v" id="impactV">--</div></div>
+            <div class="pRow" id="entryRow"><div class="k">Estimated Entry</div><div class="v vHi" id="entryV">--</div></div>
+            <div class="pSub" id="impactRow"><div class="k">Price Impact</div><div class="v" id="impactV">--</div></div>
 
-          <div class="pRow" id="slipRow">
-            <div class="k">Slippage</div>
-            <div class="v">
-              <span class="slipWrap">
-                <span class="hint">Click to adjust</span>
-                <span class="slipValue" id="slipValue">0.30%</span>
-                <span class="slipEditor hidden" id="slipEditor">
-                  <input class="slipInput" id="slipInput" type="number" step="0.01" inputmode="decimal"/>
-                  <span class="pctSym">%</span>
+            <div class="pRow" id="slipRow">
+              <div class="k">Slippage</div>
+              <div class="v">
+                <span class="slipWrap">
+                  <span class="hint">Click to adjust</span>
+                  <span class="slipValue" id="slipValue">0.30%</span>
+                  <span class="slipEditor hidden" id="slipEditor">
+                    <input class="slipInput" id="slipInput" type="number" step="0.01" inputmode="decimal"/>
+                    <span class="pctSym">%</span>
+                  </span>
                 </span>
-              </span>
+              </div>
             </div>
+
+            <div class="pRow"><div class="k">Liquidation</div><div class="v" id="liqV">--</div></div>
+
+            <div class="divider"></div>
+
+            <div class="pRow"><div class="k">Fee</div><div class="v" id="feeV">--</div></div>
+            <div class="pRow"><div class="k" id="marginK">Margin Used</div><div class="v" id="marginV">--</div></div>
           </div>
-
-          <div class="pRow"><div class="k">Liquidation</div><div class="v" id="liqV">--</div></div>
-
-          <div class="divider"></div>
-
-          <div class="pRow"><div class="k">Fee</div><div class="v" id="feeV">--</div></div>
-          <div class="pRow"><div class="k" id="marginK">Margin Used</div><div class="v" id="marginV">--</div></div>
         </div>
+      </div>
+
+      <div class="card protCard" id="protCard">
+        <div class="protTitle">🛡️ Liquidation Protection Countdown</div>
+        <div class="protMsg" id="protMsg">Your trade is protected from liquidation for</div>
+        <div class="protTimer" id="protTimer">00:15:00</div>
+        <div class="protLabel">Minutes</div>
+        <div class="protNote" id="protNote">You have 15 minutes of liquidation protection free of charge.</div>
       </div>
 
     </div>
@@ -1894,14 +2016,14 @@ body{
 
   // ===== Market selector (Hyperliquid-like, simplified) =====
   const marketData = [
-    {symbol:"BTC-USDC", lev:"100x", category:"Perps", last:"90,721", chg:"+207 / +0.23%", chgDir:"up", fund:"0.0100%", vol:"$3.10B", oi:"$2.67B"},
-    {symbol:"ETH-USDC", lev:"100x", category:"Perps", last:"4,302.15", chg:"-2.14%", chgDir:"down", fund:"0.0013%", vol:"$1.64B", oi:"$3.06B"},
-    {symbol:"SOL-USDC", lev:"20x", category:"Perps", last:"139.32", chg:"+3.50 / +2.58%", chgDir:"up", fund:"0.0100%", vol:"$601M", oi:"$654M"},
-    {symbol:"XRP-USDC", lev:"20x", category:"Perps", last:"2.2122", chg:"+0.0036 / +0.17%", chgDir:"up", fund:"0.0100%", vol:"$181M", oi:"$301M"},
-    {symbol:"PEPE-USDC", lev:"10x", category:"Perps", last:"0.000616", chg:"-0.000025 / -3.90%", chgDir:"down", fund:"0.0100%", vol:"$62.4M", oi:"$45.5M"},
-    {symbol:"XYZ100-USDC", lev:"25x", category:"Trending", last:"25.481", chg:"-126 / -0.49%", chgDir:"down", fund:"0.0050%", vol:"$214.7M", oi:"$95.8M"},
-    {symbol:"FARTCOIN-USDC", lev:"10x", category:"Crypto", last:"0.40333", chg:"+0.01055 / +2.69%", chgDir:"up", fund:"0.0212%", vol:"$51.4M", oi:"$90.6M"},
-    {symbol:"ZEC-USDC", lev:"10x", category:"Perps", last:"441.53", chg:"-3.22 / -0.72%", chgDir:"down", fund:"0.0100%", vol:"$349M", oi:"$229M"},
+    {symbol:"BTC-USDC", lev:"100x", category:"Perps", last:"90,721", chg:"+207 / +0.23%", chgDir:"up", fund:"0.0100%", vol:"$3.10B", oi:"$2.67B", longOI:"$1.40B", shortOI:"$1.27B", countdown:"00:45:10"},
+    {symbol:"ETH-USDC", lev:"100x", category:"Perps", last:"3,302.15", chg:"-2.14%", chgDir:"down", fund:"0.0013%", vol:"$1.64B", oi:"$3.06B", longOI:"$1.58B", shortOI:"$1.48B", countdown:"00:52:27"},
+    {symbol:"SOL-USDC", lev:"20x", category:"Perps", last:"139.32", chg:"+3.50 / +2.58%", chgDir:"up", fund:"0.0100%", vol:"$601M", oi:"$654M", longOI:"$330M", shortOI:"$324M", countdown:"00:31:09"},
+    {symbol:"XRP-USDC", lev:"20x", category:"Perps", last:"2.2122", chg:"+0.0036 / +0.17%", chgDir:"up", fund:"0.0100%", vol:"$181M", oi:"$301M", longOI:"$158M", shortOI:"$143M", countdown:"00:12:44"},
+    {symbol:"PEPE-USDC", lev:"10x", category:"Perps", last:"0.000616", chg:"-0.000025 / -3.90%", chgDir:"down", fund:"0.0100%", vol:"$62.4M", oi:"$45.5M", longOI:"$22.8M", shortOI:"$22.7M", countdown:"00:05:20"},
+    {symbol:"XYZ100-USDC", lev:"25x", category:"Trending", last:"25.481", chg:"-126 / -0.49%", chgDir:"down", fund:"0.0050%", vol:"$214.7M", oi:"$95.8M", longOI:"$49.4M", shortOI:"$46.4M", countdown:"00:40:00"},
+    {symbol:"FARTCOIN-USDC", lev:"10x", category:"Crypto", last:"0.40333", chg:"+0.01055 / +2.69%", chgDir:"up", fund:"0.0212%", vol:"$51.4M", oi:"$90.6M", longOI:"$48.3M", shortOI:"$42.3M", countdown:"00:08:12"},
+    {symbol:"ZEC-USDC", lev:"10x", category:"Perps", last:"441.53", chg:"-3.22 / -0.72%", chgDir:"down", fund:"0.0100%", vol:"$349M", oi:"$229M", longOI:"$120M", shortOI:"$109M", countdown:"00:27:18"},
   ];
 
   const mkt = {
@@ -1921,6 +2043,8 @@ body{
   const fmtOracle = (n) => Number.isFinite(n)
     ? n.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
     : "--";
+  const statLongOIEl = document.getElementById('statLongOI');
+  const statShortOIEl = document.getElementById('statShortOI');
   function animateOracle(direction){
     if(!statOracleEl) return;
     statOracleEl.classList.add('price-ticker');
@@ -1931,9 +2055,21 @@ body{
     oracleFlashTimer = setTimeout(()=> statOracleEl.classList.remove('price-bump'), 320);
   }
   function updateOraclePrice(price, direction){
-    if(!statOracleEl || !Number.isFinite(price)) return;
-    statOracleEl.textContent = fmtOracle(price);
-    animateOracle(direction);
+    if(!Number.isFinite(price)) return;
+    if(statOracleEl){
+      statOracleEl.textContent = fmtOracle(price);
+      animateOracle(direction);
+    }
+    if(statLongOIEl && window.__fxSelectedMarket && window.__fxSelectedMarket.longOI){
+      statLongOIEl.textContent = window.__fxSelectedMarket.longOI;
+    } else if(statLongOIEl){
+      statLongOIEl.textContent = '--';
+    }
+    if(statShortOIEl && window.__fxSelectedMarket && window.__fxSelectedMarket.shortOI){
+      statShortOIEl.textContent = window.__fxSelectedMarket.shortOI;
+    } else if(statShortOIEl){
+      statShortOIEl.textContent = '--';
+    }
   }
 
   function mktEnsure() {
@@ -2040,18 +2176,24 @@ body{
     mkt.tbody.innerHTML = mktFiltered.map((r,i)=>marketRowHTML(r,i)).join('');
   }
 
-  function selectMarket(row){
-    const pairEl = document.querySelector('.market-pill .pair');
-    const logoEl = document.querySelector('.market-pill .logo');
-    const levEl = document.querySelector('.market-pill .lev');
-    if(pairEl) pairEl.textContent = row.symbol;
-    if(levEl) levEl.textContent = row.lev === 'SPOT' ? 'Spot' : row.lev;
-    if(logoEl) logoEl.textContent = (row.symbol || '').includes('BTC') ? '₿' : 'Ξ';
-    // update small stats (keep simple)
+  let currentMarket = null;
+  function applyStats(row, updatePair=true){
+    if(!row) return;
+    currentMarket = row;
+    window.__fxSelectedMarket = row;
+    if(updatePair){
+      const pairEl = document.querySelector('.market-pill .pair');
+      const logoEl = document.querySelector('.market-pill .logo');
+      const levEl = document.querySelector('.market-pill .lev');
+      if(pairEl) pairEl.textContent = row.symbol;
+      if(levEl) levEl.textContent = row.lev === 'SPOT' ? 'Spot' : row.lev;
+      if(logoEl) logoEl.textContent = (row.symbol || '').includes('BTC') ? '₿' : 'Ξ';
+      const chartTitle = document.getElementById('chartSymbol');
+      if(chartTitle) chartTitle.textContent = row.symbol.replace('USDc','USDC').replace('/',' · ');
+    }
     const oracleEl = document.getElementById('statOracle');
     const chgEl = document.getElementById('statChg');
     const volEl = document.getElementById('statVol');
-    const oiEl = document.getElementById('statOI');
     const fundEl = document.getElementById('statFunding');
     if(oracleEl) oracleEl.textContent = row.last;
     if(chgEl){
@@ -2060,13 +2202,18 @@ body{
       chgEl.classList.toggle('up', row.chgDir==='up');
     }
     if(volEl) volEl.textContent = row.vol;
-    if(oiEl) oiEl.textContent = row.oi;
     if(fundEl) fundEl.textContent = row.fund;
-    // chart label
-    const chartTitle = document.getElementById('chartSymbol');
-    if(chartTitle) chartTitle.textContent = row.symbol.replace('USDc','USDC').replace('/',' · ');
+    if(statLongOIEl) statLongOIEl.textContent = row.longOI ?? "--";
+    if(statShortOIEl) statShortOIEl.textContent = row.shortOI ?? "--";
+  }
+
+  function selectMarket(row){
+    applyStats(row, true);
     closeMarket();
   }
+
+  const defaultMarket = marketData.find(r => r.symbol === "ETH-USDC") || marketData[0];
+  if(defaultMarket) applyStats(defaultMarket, true);
 
   // events
   if(mkt.btn){
@@ -2181,6 +2328,7 @@ body{
     sl: null
   };
 
+  const PROTECTION_DURATION = 15 * 60 * 1000;
   const SNAP_LEV = [1, 5, 10, 25];
 
   const $ = (id) => document.getElementById(id);
@@ -2233,11 +2381,14 @@ body{
   const slipInput = $("slipInput");
 
   const submitBtn = $("submitBtn");
-  // Liquidation Protection elements
-  const protBanner = $("protBanner");
-  const protTitle = $("protTitle");
-  const protSub = $("protSub");
-  const protRight = $("protRight");
+  const buyPriceEl = $("buyPrice");
+  const sellPriceEl = $("sellPrice");
+  const tradeDetailsCard = $("tradeDetailsCard");
+  const detailsToggle = $("detailsToggle");
+  const protCard = $("protCard");
+  const protMsg = $("protMsg");
+  const protNote = $("protNote");
+  const protTimer = $("protTimer");
 
   let liveEntryPrice = null;
   let liveEntryDirection = "flat";
@@ -2247,6 +2398,11 @@ body{
     entryV.classList.add("price-ticker","price-bump");
     clearTimeout(entryFlashTimer);
     entryFlashTimer = setTimeout(() => entryV.classList.remove("price-bump"), 350);
+  }
+  function setSidePrices(price){
+    const txt = Number.isFinite(price) ? `$${fmt(price, 2)}` : "--";
+    if(buyPriceEl) buyPriceEl.textContent = txt;
+    if(sellPriceEl) sellPriceEl.textContent = txt;
   }
 
   const fmt = (n, d=2) => Number.isFinite(n)
@@ -2261,7 +2417,7 @@ body{
   function nowMs(){ return Date.now(); }
   function startProtection(){
     position.protection.active = true;
-    position.protection.endTime = nowMs() + 15 * 60 * 1000;
+    position.protection.endTime = nowMs() + PROTECTION_DURATION;
   }
   function clearProtection(){
     position.protection.active = false;
@@ -2271,11 +2427,12 @@ body{
     if (!position.protection.active) return 0;
     return Math.max(0, position.protection.endTime - nowMs());
   }
-  function fmtMMSS(ms){
-    const s = Math.max(0, Math.floor(ms / 1000));
-    const mm = String(Math.floor(s / 60)).padStart(2, "0");
-    const ss = String(s % 60).padStart(2, "0");
-    return `${mm}:${ss}`;
+  function fmtCountdown(ms){
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const hh = String(Math.floor(total / 3600)).padStart(2, "0");
+    const mm = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+    const ss = String(total % 60).padStart(2, "0");
+    return `${hh}:${mm}:${ss}`;
   }
 
   function estimateImpactPct(orderValueUsd){
@@ -2437,7 +2594,7 @@ body{
     levPill.textContent = `${state.lev}x`;
     setLevVisual();
 
-    slipValue.textContent = `${state.slippagePct.toFixed(2)}%`;
+    slipValue.textContent = `Est: 0.0032% · Max: ${state.slippagePct.toFixed(2)}%`;
 
     const p = computePreview();
     const dir = sideToDir();
@@ -2523,27 +2680,21 @@ body{
 
 
     /* Liquidation Protection render */
-    // Show preview when opening (no position OR not reduce-only close intent)
-    // Show countdown when protection active and time remaining > 0
-    if (protBanner){
+    if (protCard){
       const rem = remainingProtectionMs();
-      const showPreview = !position.hasPosition;
       const showActive = position.hasPosition && position.protection.active && rem > 0;
-
-      if (showPreview){
-        protBanner.classList.remove("hidden");
-        protTitle.textContent = "Liquidation Protection · 15 min";
-        protSub.textContent = "No liquidation during the first 15 minutes after opening";
-        protRight.textContent = "15 min";
-        protRight.classList.remove("active");
-      } else if (showActive){
-        protBanner.classList.remove("hidden");
-        protTitle.textContent = "Liquidation Protection";
-        protSub.textContent = "No liquidation during the first 15 minutes after opening";
-        protRight.textContent = fmtMMSS(rem);
-        protRight.classList.add("active");
-      } else {
-        protBanner.classList.add("hidden");
+      const timerText = showActive ? fmtCountdown(rem) : fmtCountdown(PROTECTION_DURATION);
+      protTimer.textContent = timerText;
+      protCard.classList.toggle("active", showActive);
+      if (protMsg){
+        protMsg.textContent = showActive
+          ? "Your trade is protected from liquidation for"
+          : "Protection activates on your next trade.";
+      }
+      if (protNote){
+        protNote.textContent = showActive
+          ? "No liquidation during the first 15 minutes after opening."
+          : "You have 15 minutes of liquidation protection free of charge.";
       }
     }
 
@@ -2602,17 +2753,7 @@ body{
       if (direction) liveEntryDirection = direction;
       market.oraclePrice = price;
       bumpEntryTicker();
-      render();
-    });
-  }
-
-  if (priceFeed && typeof priceFeed.subscribe === "function") {
-    priceFeed.subscribe(({price, direction}) => {
-      if (!Number.isFinite(price)) return;
-      liveEntryPrice = price;
-      if (direction) liveEntryDirection = direction;
-      market.oraclePrice = price;
-      bumpEntryTicker();
+      setSidePrices(price);
       render();
     });
   }
@@ -2624,6 +2765,16 @@ body{
     state.tab = t.dataset.tab;
     render();
   });
+  if (detailsToggle && !detailsToggle.dataset.collapseInit) {
+    detailsToggle.dataset.collapseInit = "1";
+    detailsToggle.addEventListener("click", () => {
+      if(!tradeDetailsCard) return;
+      const expanded = !tradeDetailsCard.classList.contains("expanded");
+      tradeDetailsCard.classList.toggle("expanded", expanded);
+      tradeDetailsCard.classList.toggle("collapsed", !expanded);
+      detailsToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+    });
+  }
 
 // Side (keep reduce-only unchanged across Buy/Long ↔ Sell/Short switches)
 sideSeg.addEventListener("click", (e) => {
@@ -2833,10 +2984,7 @@ sideSeg.addEventListener("click", (e) => {
   setInterval(() => {
     if (position.hasPosition && position.protection.active) {
       const rem = remainingProtectionMs();
-      if (rem <= 0) {
-        // expired; hide banner naturally
-        position.protection.active = false;
-      }
+      if (rem <= 0) position.protection.active = false;
       render();
     }
   }, 1000);
@@ -2886,6 +3034,7 @@ sideSeg.addEventListener("click", (e) => {
     sl: null
   };
 
+  const PROTECTION_DURATION = 15 * 60 * 1000;
   const SNAP_LEV = [1, 5, 10, 25];
 
   const $ = (id) => document.getElementById(id);
@@ -2938,11 +3087,14 @@ sideSeg.addEventListener("click", (e) => {
   const slipInput = $("slipInput");
 
   const submitBtn = $("submitBtn");
-  // Liquidation Protection elements
-  const protBanner = $("protBanner");
-  const protTitle = $("protTitle");
-  const protSub = $("protSub");
-  const protRight = $("protRight");
+  const buyPriceEl = $("buyPrice");
+  const sellPriceEl = $("sellPrice");
+  const tradeDetailsCard = $("tradeDetailsCard");
+  const detailsToggle = $("detailsToggle");
+  const protCard = $("protCard");
+  const protMsg = $("protMsg");
+  const protNote = $("protNote");
+  const protTimer = $("protTimer");
 
   const priceFeed = window.fxPriceFeed;
   let liveEntryPrice = null;
@@ -2953,6 +3105,11 @@ sideSeg.addEventListener("click", (e) => {
     entryV.classList.add("price-ticker","price-bump");
     clearTimeout(entryFlashTimer);
     entryFlashTimer = setTimeout(() => entryV.classList.remove("price-bump"), 350);
+  }
+  function setSidePrices(price){
+    const txt = Number.isFinite(price) ? `$${fmt(price, 2)}` : "--";
+    if(buyPriceEl) buyPriceEl.textContent = txt;
+    if(sellPriceEl) sellPriceEl.textContent = txt;
   }
 
   const fmt = (n, d=2) => Number.isFinite(n)
@@ -2967,7 +3124,7 @@ sideSeg.addEventListener("click", (e) => {
   function nowMs(){ return Date.now(); }
   function startProtection(){
     position.protection.active = true;
-    position.protection.endTime = nowMs() + 15 * 60 * 1000;
+    position.protection.endTime = nowMs() + PROTECTION_DURATION;
   }
   function clearProtection(){
     position.protection.active = false;
@@ -2977,11 +3134,12 @@ sideSeg.addEventListener("click", (e) => {
     if (!position.protection.active) return 0;
     return Math.max(0, position.protection.endTime - nowMs());
   }
-  function fmtMMSS(ms){
-    const s = Math.max(0, Math.floor(ms / 1000));
-    const mm = String(Math.floor(s / 60)).padStart(2, "0");
-    const ss = String(s % 60).padStart(2, "0");
-    return `${mm}:${ss}`;
+  function fmtCountdown(ms){
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const hh = String(Math.floor(total / 3600)).padStart(2, "0");
+    const mm = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+    const ss = String(total % 60).padStart(2, "0");
+    return `${hh}:${mm}:${ss}`;
   }
 
   function estimateImpactPct(orderValueUsd){
@@ -3143,10 +3301,11 @@ sideSeg.addEventListener("click", (e) => {
     levPill.textContent = `${state.lev}x`;
     setLevVisual();
 
-    slipValue.textContent = `${state.slippagePct.toFixed(2)}%`;
+    slipValue.textContent = `Est: 0.0032% · Max: ${state.slippagePct.toFixed(2)}%`;
 
     const p = computePreview();
     const dir = sideToDir();
+    setSidePrices(market.oraclePrice);
 
     // Hide TP/SL when reduce-only is on
     const hideTpsl = !!state.reduceOnly;
@@ -3229,27 +3388,21 @@ sideSeg.addEventListener("click", (e) => {
 
 
     /* Liquidation Protection render */
-    // Show preview when opening (no position OR not reduce-only close intent)
-    // Show countdown when protection active and time remaining > 0
-    if (protBanner){
+    if (protCard){
       const rem = remainingProtectionMs();
-      const showPreview = !position.hasPosition;
       const showActive = position.hasPosition && position.protection.active && rem > 0;
-
-      if (showPreview){
-        protBanner.classList.remove("hidden");
-        protTitle.textContent = "Liquidation Protection · 15 min";
-        protSub.textContent = "No liquidation during the first 15 minutes after opening";
-        protRight.textContent = "15 min";
-        protRight.classList.remove("active");
-      } else if (showActive){
-        protBanner.classList.remove("hidden");
-        protTitle.textContent = "Liquidation Protection";
-        protSub.textContent = "No liquidation during the first 15 minutes after opening";
-        protRight.textContent = fmtMMSS(rem);
-        protRight.classList.add("active");
-      } else {
-        protBanner.classList.add("hidden");
+      const timerText = showActive ? fmtCountdown(rem) : fmtCountdown(PROTECTION_DURATION);
+      protTimer.textContent = timerText;
+      protCard.classList.toggle("active", showActive);
+      if (protMsg){
+        protMsg.textContent = showActive
+          ? "Your trade is protected from liquidation for"
+          : "Protection activates on your next trade.";
+      }
+      if (protNote){
+        protNote.textContent = showActive
+          ? "No liquidation during the first 15 minutes after opening."
+          : "You have 15 minutes of liquidation protection free of charge.";
       }
     }
 
@@ -3517,10 +3670,7 @@ sideSeg.addEventListener("click", (e) => {
   setInterval(() => {
     if (position.hasPosition && position.protection.active) {
       const rem = remainingProtectionMs();
-      if (rem <= 0) {
-        // expired; hide banner naturally
-        position.protection.active = false;
-      }
+      if (rem <= 0) position.protection.active = false;
       render();
     }
   }, 1000);
@@ -3717,7 +3867,8 @@ sideSeg.addEventListener("click", (e) => {
         <td class="actions">
           <span class="linklike act-close">Close</span>&nbsp;&nbsp;
           <span class="linklike act-reverse">Reverse</span>&nbsp;&nbsp;
-          <span class="linklike act-tpsl">TP/SL</span>
+          <span class="linklike act-tpsl">TP/SL</span>&nbsp;&nbsp;
+          <span class="linklike act-lev">Leverage</span>
         </td>
       `);
       tr.dataset.posIndex = String(data.positions.indexOf(p));
@@ -4103,9 +4254,56 @@ sideSeg.addEventListener("click", (e) => {
           <div class="inlinePct mutedPct" id="fxSlPct">—</div>
         </div>
       </div>
+  </div>
+  <div class="m-ft">
+    <button class="btn" id="fxTpslSubmit">Confirm TP/SL</button>
+  </div>
+</div>
+
+  <div class="fx-modal" id="fxLevModal" role="dialog" aria-modal="true" aria-label="Adjust Leverage">
+    <div class="m-hd">
+      <div class="m-title">
+        <div class="t1" id="fxLevTitle">Adjust Leverage</div>
+        <div class="t2">Fine-tune margin or release collateral</div>
+      </div>
+      <div class="m-x" data-fx-lev="close">✕</div>
+    </div>
+    <div class="m-bd">
+      <div class="fx-modal-card">
+        <div class="fx-row between" style="margin-bottom:12px;">
+          <span class="fx-pill" id="fxLevCurrent">5x</span>
+          <span class="fx-pill" id="fxLevNew">5x</span>
+        </div>
+        <div class="fx-sliderBlock">
+          <div class="fx-sliderRail">
+            <div class="fx-sliderFill" id="fxLevFill"></div>
+            <div class="fx-sliderKnob" id="fxLevKnob"></div>
+            <input class="fx-sliderInput" id="fxLevSlider" type="range" min="1" max="25" step="1" value="5"/>
+          </div>
+          <div class="fx-sliderLabels">
+            <span>1x</span>
+            <span>5x</span>
+            <span>10x</span>
+            <span>15x</span>
+            <span>25x</span>
+          </div>
+        </div>
+
+        <div class="fx-modal-card" style="margin-top:16px; gap:8px;">
+          <div class="fx-row between">
+            <span class="fx-mini" id="fxLevPrimaryLabel">Margin Used</span>
+            <span class="fx-value" id="fxLevPrimaryValue">--</span>
+          </div>
+          <div class="fx-row between">
+            <span class="fx-mini">Fee</span>
+            <span class="fx-value" id="fxLevFee">--</span>
+          </div>
+          <div class="fx-note" id="fxLevNote">Adjusting leverage applies instantly.</div>
+        </div>
+      </div>
     </div>
     <div class="m-ft">
-      <button class="btn" id="fxTpslSubmit">Confirm TP/SL</button>
+      <button class="btn" id="fxLevSubmit">Leverage Down</button>
     </div>
   </div>
 
@@ -4118,6 +4316,7 @@ sideSeg.addEventListener("click", (e) => {
   const closeM = document.getElementById('fxCloseModal');
   const revM = document.getElementById('fxReverseModal');
   const tpslM = document.getElementById('fxTpslModal');
+  const levM = document.getElementById('fxLevModal');
   const cancelAllM = document.getElementById('cancelAllModal');
   const cancelAllBtn = document.getElementById('cancelAllBtn');
   const cancelAllSubmit = document.getElementById('cancelAllConfirm');
@@ -4130,7 +4329,7 @@ sideSeg.addEventListener("click", (e) => {
   }
   function hideAll(){
     if(overlay) { overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); }
-    [closeM, revM, tpslM, cancelAllM].forEach(m=>{ if(m) m.style.display='none'; });
+    [closeM, revM, tpslM, levM, cancelAllM].forEach(m=>{ if(m) m.style.display='none'; });
   }
   if(overlay){
     overlay.addEventListener('click', hideAll);
@@ -4151,6 +4350,14 @@ sideSeg.addEventListener("click", (e) => {
     const s = String(x).replace(/[^0-9.\-]/g,'');
     return parseFloat(s);
   }
+  function parseLev(x){
+    if(!x) return NaN;
+    const m = String(x).match(/([0-9]*\.?[0-9]+)/);
+    return m ? Number(m[1]) : NaN;
+  }
+  const fmtUsd = (n) => Number.isFinite(n)
+    ? `$${n.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`
+    : "—";
   function getPosByIndex(idxStr){
     const d = window.__fx100Data;
     const idx = parseInt(idxStr,10);
@@ -4421,12 +4628,101 @@ sideSeg.addEventListener("click", (e) => {
     if(t && t.closest && t.closest('[data-fx-tpsl]')) hideAll();
   });
 
+  // ---- Leverage modal ----
+  const LEV_FEE_RATE = 0.0005;
+  const levTitle = $('#fxLevTitle');
+  const levCurrent = $('#fxLevCurrent');
+  const levNew = $('#fxLevNew');
+  const levSlider = $('#fxLevSlider');
+  const levFill = $('#fxLevFill');
+  const levKnob = $('#fxLevKnob');
+  const levPrimaryLabel = $('#fxLevPrimaryLabel');
+  const levPrimaryValue = $('#fxLevPrimaryValue');
+  const levFee = $('#fxLevFee');
+  const levNote = $('#fxLevNote');
+  const levSubmit = $('#fxLevSubmit');
+
+  initSlider(levSlider, levFill, levKnob);
+
+  function leverageDisplay(v){
+    if(!Number.isFinite(v)) return "--";
+    const s = v % 1 === 0 ? String(v) : v.toFixed(1);
+    return `${s}x`;
+  }
+  function calcPosValue(p){
+    const sizeEth = parseNum(p.size);
+    const price = Number.isFinite(parseNum(p.entry)) ? parseNum(p.entry) : parseNum(p.oracle);
+    if(!Number.isFinite(sizeEth) || !Number.isFinite(price)) return NaN;
+    return sizeEth * price;
+  }
+  function updateLevPreview(){
+    if(!levM) return;
+    const idx = levM.dataset.posIndex;
+    const pos = getPosByIndex(idx);
+    if(!pos) return;
+    const curLev = parseLev(pos.lev) || 5;
+    const target = Number(levSlider?.value) || curLev;
+    const newLev = Math.min(25, Math.max(1, target));
+    const posValue = calcPosValue(pos);
+    const oldMargin = Number.isFinite(posValue) && curLev > 0 ? posValue / curLev : NaN;
+    const newMargin = Number.isFinite(posValue) && newLev > 0 ? posValue / newLev : NaN;
+    const fee = Number.isFinite(posValue) ? posValue * LEV_FEE_RATE : NaN;
+    const isDown = newLev < curLev - 1e-9;
+    const isUp = newLev > curLev + 1e-9;
+    if(levCurrent) levCurrent.textContent = leverageDisplay(curLev);
+    if(levNew) levNew.textContent = leverageDisplay(newLev);
+
+    if(levPrimaryLabel) levPrimaryLabel.textContent = isUp ? "Receive" : "Margin Used";
+    if(levPrimaryValue){
+      const val = isUp && Number.isFinite(oldMargin) && Number.isFinite(newMargin)
+        ? Math.max(0, oldMargin - newMargin)
+        : newMargin;
+      levPrimaryValue.textContent = fmtUsd(val);
+    }
+    if(levFee) levFee.textContent = fmtUsd(fee);
+    if(levNote){
+      levNote.textContent = isUp
+        ? "Higher leverage releases collateral back to wallet."
+        : "Lower leverage increases required margin.";
+      if(!isUp && !isDown) levNote.textContent = "Leverage unchanged.";
+    }
+    if(levSubmit){
+      let label = "Confirm Leverage";
+      if(isUp) label = "Leverage Up";
+      else if(isDown) label = "Leverage Down";
+      levSubmit.textContent = label;
+      levSubmit.disabled = !(isUp || isDown);
+      if(isUp) setButtonStyle(levSubmit, 'long');
+      else if(isDown) setButtonStyle(levSubmit, 'short');
+      else {
+        levSubmit.classList.add('btn');
+        levSubmit.classList.remove('buy','sell');
+      }
+    }
+  }
+  function openLevModal(p, idx){
+    if(!levM) return;
+    if(levTitle) levTitle.textContent = `Adjust Leverage · ${p.coin}`;
+    levM.dataset.posIndex = idx;
+    const curLev = parseLev(p.lev) || 5;
+    if(levSlider) levSlider.value = String(curLev);
+    syncSlider(levSlider, levFill, levKnob);
+    updateLevPreview();
+    showModal(levM);
+  }
+  levSlider?.addEventListener('input', updateLevPreview);
+  levSubmit?.addEventListener('click', ()=>{ hideAll(); });
+  document.addEventListener('click', (e)=>{
+    const t = e.target;
+    if(t && t.closest && t.closest('[data-fx-lev="close"]')) hideAll();
+  });
+
   // ===== Event delegation for actions (Positions only) =====
   document.addEventListener('click', (e)=>{
     const el = e.target;
     if(!el || !el.closest) return;
 
-    const act = el.closest('.act-close, .act-reverse, .act-tpsl');
+    const act = el.closest('.act-close, .act-reverse, .act-tpsl, .act-lev');
     if(!act) return;
 
     const tr = act.closest('tr');
@@ -4449,6 +4745,11 @@ sideSeg.addEventListener("click", (e) => {
     if(act.classList.contains('act-tpsl')){
       tpslM.dataset.posIndex = idx;
       openTpslModal(pos);
+      return;
+    }
+    if(act.classList.contains('act-lev')){
+      levM.dataset.posIndex = idx;
+      openLevModal(pos, idx);
       return;
     }
   });
