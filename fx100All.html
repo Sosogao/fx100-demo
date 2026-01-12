@@ -2289,8 +2289,9 @@ body{
       updateOraclePrice(price, direction);
     });
   }
+  const initialOracle = (priceFeed && typeof priceFeed.getPrice === "function") ? priceFeed.getPrice() : null;
   // Mock data (replace with real)
-  const market = { oraclePrice: 4302.15, feeRate: 0.0005, maxLev: 25 };
+  const market = { oraclePrice: Number.isFinite(initialOracle) ? initialOracle : 0, feeRate: 0.0005, maxLev: 25 };
   const wallet = { availableUSDC: 1000 };
 
   const position = {
@@ -2997,8 +2998,9 @@ sideSeg.addEventListener("click", (e) => {
 
 <script>
 (() => {
+  const initialOracle = (priceFeed && typeof priceFeed.getPrice === "function") ? priceFeed.getPrice() : null;
   // Mock data (replace with real)
-  const market = { oraclePrice: 4302.15, feeRate: 0.0005, maxLev: 25 };
+  const market = { oraclePrice: Number.isFinite(initialOracle) ? initialOracle : 0, feeRate: 0.0005, maxLev: 25 };
   const wallet = { availableUSDC: 1000 };
 
   const position = {
