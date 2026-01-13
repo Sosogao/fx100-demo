@@ -1503,11 +1503,19 @@ body{
 }
 #tablePositions th:last-child,
 #tablePositions td.actions{
-  width:260px;
+  width:320px;
 }
 .table td.actions{
   overflow:visible;
   text-overflow:initial;
+  white-space:nowrap;
+}
+.actions-list{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:8px;
+  align-items:center;
+  justify-content:flex-start;
 }
 .pill-action{
   display:inline-flex; align-items:center; gap:8px;
@@ -3913,10 +3921,12 @@ sideSeg.addEventListener("click", (e) => {
         <td>${p.marginUsed}</td>
         <td class="${String(p.funding).includes('-') ? 'dir-short' : 'dir-long'}">${p.funding}</td>
         <td class="actions">
-          <span class="linklike act-close">Close</span>&nbsp;&nbsp;
-          <span class="linklike act-reverse">Reverse</span>&nbsp;&nbsp;
-          <span class="linklike act-tpsl">TP/SL</span>&nbsp;&nbsp;
-          <span class="linklike act-lev">Leverage</span>
+          <div class="actions-list">
+            <span class="linklike act-close">Close</span>
+            <span class="linklike act-reverse">Reverse</span>
+            <span class="linklike act-tpsl">TP/SL</span>
+            <span class="linklike act-lev">Leverage</span>
+          </div>
         </td>
       `);
       tr.dataset.posIndex = String(data.positions.indexOf(p));
